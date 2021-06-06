@@ -1,37 +1,78 @@
-/**
- * If you are not familiar with React Navigation, check out the "Fundamentals" guide:
- * https://reactnavigation.org/docs/getting-started
- *
- */
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+
+import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import * as React from 'react';
-import { ColorSchemeName } from 'react-native';
+import { TabOneScreen } from '../screens/TabOneScreen';
+import { TabTwoScreen } from '../screens/TabTwoScreen';
+import { BottomTabParamList, TabOneParamList, TabTwoParamList } from '../types';
+import { NavigationContainer } from '@react-navigation/native';
 
-import NotFoundScreen from '../screens/NotFoundScreen';
-import { RootStackParamList } from '../types';
-import BottomTabNavigator from './BottomTabNavigator';
-import LinkingConfiguration from './LinkingConfiguration';
+const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+const BottomTabNavigator = () => {
   return (
-    <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <RootNavigator />
-    </NavigationContainer>
+    <BottomTab.Navigator
+      initialRouteName="TabOne"
+      tabBarOptions={{ activeTintColor: '#000' }}>
+      <BottomTab.Screen
+        name="TabOne"
+        component={TabOneNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="md-information-circle-outline" color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name="TabTwo"
+        component={TabTwoNavigator}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name="list-outline" color={color} />,
+        }}
+      />
+    </BottomTab.Navigator>
   );
 }
 
-// A root stack navigator is often used for displaying modals on top of all other content
-// Read more here: https://reactnavigation.org/docs/modal
-const Stack = createStackNavigator<RootStackParamList>();
+function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']; color: string }) {
+  return <Ionicons size={30} style={{ marginBottom: -3 }} {...props} />;
+}
 
-function RootNavigator() {
+const TabOneStack = createStackNavigator<TabOneParamList>();
+
+function TabOneNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Root" component={BottomTabNavigator} />
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-    </Stack.Navigator>
+    <TabOneStack.Navigator>
+      <TabOneStack.Screen
+        name="TabOneScreen"
+        component={TabOneScreen}
+        options={{ headerTitle: 'О приложении' }}
+      />
+    </TabOneStack.Navigator>
+  );
+}
+
+const TabTwoStack = createStackNavigator<TabTwoParamList>();
+
+function TabTwoNavigator() {
+  return (
+    <TabTwoStack.Navigator>
+      <TabTwoStack.Screen
+        name="TabTwoScreen"
+        component={TabTwoScreen}
+        options={{ 
+          headerTitle: 'Котировки', 
+          headerTitleAlign: 'center',
+        }}
+      />
+    </TabTwoStack.Navigator>
+  );
+}
+
+
+export const Navigation = () => {
+  return (
+    <NavigationContainer>
+      <BottomTabNavigator />
+    </NavigationContainer>
   );
 }
